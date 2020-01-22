@@ -5,7 +5,7 @@
 //  Created by Pedro Henrique  on 20/01/20.
 //  Copyright © 2020 Pedro Henrique . All rights reserved.
 
-
+import Foundation
 import UIKit
 import Alamofire
 import SwiftyJSON
@@ -26,9 +26,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 
     let gradientLayer = CAGradientLayer();
 
-    let apiKey = "14d18e030221d3dfe160c5213255f555"
-    var lat = 11.12563
-    var lon = 67.12783
+    let apiKey = "03d3855c4adbbcca12d8a8afa2d31731"
+    var lat = -15.7962004
+    var lon = -47.9110414
     var activityIndicator: NVActivityIndicatorView!
     let locationManager = CLLocationManager()
 
@@ -44,26 +44,46 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         locationManager.requestWhenInUseAuthorization()
         
-        activityIndicator.startAnimating()
-        if(CLLocationManager.locationServicesEnabled()){
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.startUpdatingLocation()
-        }
+//        activityIndicator.startAnimating()
+//        if(CLLocationManager.locationServicesEnabled()){
+//            locationManager.delegate = self
+//            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+//            locationManager.startUpdatingLocation()
+//        }else{
+//            print("error na localização")
+//        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        setGrayGradientBackground()
+        setBlueGradientBackground()
         
-        func locationManager(_ manager: CLLocationManager , didUpdateLocations locations: [CLLocation]){
-            
-            let location = locations[0]
-            lat = location.coordinate.latitude
-            lon = location.coordinate.longitude
-            
-        }
-
-
+//        func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+//
+//            let location = locations[0]
+//            lat = location.coordinate.latitude
+//            lon = location.coordinate.longitude
+//
+            Alamofire.request("http://api.openweathermap.org/data/2.5/weather?lat=-15.7962004&lon=-47.9110414&appid=03d3855c4adbbcca12d8a8afa2d31731&units=metric").responseJSON {
+                response in
+                self.activityIndicator.stopAnimating()
+                
+                if let responseStr = response.result.value{
+                    let jsonResponse = JSON(responseStr)
+                    let jsonWeather = jsonResponse["weather"].array![0]
+                    let jsonTemp = jsonResponse["main"]
+                    let iconName = jsonWeather["icon"].stringValue
+                    
+                    self.locationLabel.text = jsonResponse["name"].stringValue
+                    self.conditionalImageView.image = UIImage(named: iconName)
+                    self.conditionalLabel.text = jsonWeather["main"].stringValue
+                    self.temperatureLabel.text = "\(Int(round(jsonTemp["temp"].doubleValue)))"
+                    
+                }
+            }
+//        }
+        
+        self.locationManager.stopUpdatingLocation()
+        
     }
 
     func setBlueGradientBackground(){
