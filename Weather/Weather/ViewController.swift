@@ -23,6 +23,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var backgroundView: UIView!
+    
+    @IBOutlet weak var descriptionLabel: UILabel!
+    
+    
+    @IBOutlet weak var tempMinLabel: UILabel!
+    @IBOutlet weak var tempMaxLabel: UILabel!
+    @IBOutlet weak var feelsLikeLabel: UILabel!
+    @IBOutlet weak var humidityLabel: UILabel!
+    @IBOutlet weak var windSpeedLabel: UILabel!
+    @IBOutlet weak var pressureLabel: UILabel!
+    @IBOutlet weak var cloudinnesLabel: UILabel!
+    @IBOutlet weak var windDirectionLabel: UILabel!
+    
+    
+    
 
     let gradientLayer = CAGradientLayer();
 
@@ -71,12 +86,25 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     let jsonResponse = JSON(responseStr)
                     let jsonWeather = jsonResponse["weather"].array![0]
                     let jsonTemp = jsonResponse["main"]
+                    let jsonWind = jsonResponse["wind"]
+                    let jsonClouds = jsonResponse["clouds"]
                     let iconName = jsonWeather["icon"].stringValue
                     
                     self.locationLabel.text = jsonResponse["name"].stringValue
                     self.conditionalImageView.image = UIImage(named: iconName)
                     self.conditionalLabel.text = jsonWeather["main"].stringValue
+                    self.descriptionLabel.text = jsonWeather["description"].stringValue
                     self.temperatureLabel.text = "\(Int(round(jsonTemp["temp"].doubleValue)))"
+                    
+                    self.tempMinLabel.text = "\(Int(round(jsonTemp["temp_min"].doubleValue)))°C"
+                    self.tempMaxLabel.text = "\(Int(round(jsonTemp["temp_max"].doubleValue)))°C"
+                    self.feelsLikeLabel.text = "\(Int(round(jsonTemp["feels_like"].doubleValue)))°C"
+                    self.humidityLabel.text = "\(Int(round(jsonTemp["humidity"].doubleValue)))%"
+                    self.pressureLabel.text = "\(Int(round(jsonTemp["pressure"].doubleValue)))hPa"
+                    self.windSpeedLabel.text = "\(jsonWind["speed"]) mph"
+                    self.windDirectionLabel.text = "\(jsonWind["deg"])°"
+                    self.cloudinnesLabel.text = "\(jsonClouds["all"])%"
+
                     
                 }
             }
